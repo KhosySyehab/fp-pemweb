@@ -12,9 +12,19 @@ export const QuizContainer = ({ quizzes }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
+  const contentRef = React.useRef(null);
 
   const currentQuiz = quizzes[currentQuestionIndex];
   const totalQuestions = quizzes.length;
+
+  // Auto-scroll to bottom when submitted
+  useEffect(() => {
+    if (isSubmitted && contentRef.current) {
+      setTimeout(() => {
+        contentRef.current.scrollTop = contentRef.current.scrollHeight;
+      }, 100);
+    }
+  }, [isSubmitted]);
 
   // Keyboard support
   useEffect(() => {
@@ -86,25 +96,31 @@ export const QuizContainer = ({ quizzes }) => {
   };
 
   const handleSubmit = () => {
-    if (isSubmitted) {
-      if (currentQuestionIndex < totalQuestions - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-        setSelectedAnswers([]);
-        setIsSubmitted(false);
+    const answer = selectedAnswers.map(item => item.letter).join('');
+    if (answer.length === currentQuiz.displayLength) {
+      if (answer === currentQuiz.answer) {
+        // Correct answer - auto advance
+        setScore(score + 1);
+        setTimeout(() => {
+          if (currentQuestionIndex < totalQuestions - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setSelectedAnswers([]);
+            setIsSubmitted(false);
+          } else {
+            alert(`Quiz Complete! Score: ${score + 1}/${totalQuestions}`);
+            setCurrentQuestionIndex(0);
+            setScore(0);
+            setSelectedAnswers([]);
+            setIsSubmitted(false);
+          }
+        }, 1500);
       } else {
-        alert(`Quiz Complete! Score: ${score}/${totalQuestions}`);
-        setCurrentQuestionIndex(0);
-        setScore(0);
-        setSelectedAnswers([]);
-        setIsSubmitted(false);
-      }
-    } else {
-      const answer = selectedAnswers.map(item => item.letter).join('');
-      if (answer.length === currentQuiz.displayLength) {
+        // Wrong answer - reset and show message, stay on page
+        setTimeout(() => {
+          setSelectedAnswers([]);
+          setIsSubmitted(false);
+        }, 2000); // Show "Wrong!" for 2 seconds then reset
         setIsSubmitted(true);
-        if (answer === currentQuiz.answer) {
-          setScore(score + 1);
-        }
       }
     }
   };
@@ -115,10 +131,10 @@ export const QuizContainer = ({ quizzes }) => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-500 to-blue-300 flex flex-col">
+    <div className="h-screen bg-gradient-to-b from-blue-500 to-blue-300 flex flex-col overflow-hidden">
       <QuizHeader currentQuestion={currentQuestionIndex + 1} totalQuestions={totalQuestions} />
 
-      <div className="flex-1 flex flex-col items-center p-3 overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center p-3 overflow-y-auto" ref={contentRef}>
         {/* Audio Button */}
         <div className="pt-1">
           <AudioButton onPlay={handlePlayAudio} isPlaying={isPlaying} />
@@ -136,6 +152,8 @@ export const QuizContainer = ({ quizzes }) => {
             displayLength={currentQuiz.displayLength}
             onRemoveLetter={handleRemoveLetter}
             onDropLetter={handleDropLetter}
+            isSubmitted={isSubmitted}
+            correctAnswer={currentQuiz.answer.split('')}
           />
         </div>
 
@@ -145,10 +163,7 @@ export const QuizContainer = ({ quizzes }) => {
             {selectedAnswers.map(item => item.letter).join('') === currentQuiz.answer ? (
               <p className="text-2xl font-bold text-green-300 drop-shadow-lg">Correct! 🎉</p>
             ) : (
-              <div>
-                <p className="text-2xl font-bold text-red-300 drop-shadow-lg">Wrong!</p>
-                <p className="text-white text-sm font-semibold">Answer: {currentQuiz.answer}</p>
-              </div>
+              <p className="text-2xl font-bold text-red-300 drop-shadow-lg">Wrong! Try again.</p>
             )}
           </div>
         )}
@@ -163,7 +178,7 @@ export const QuizContainer = ({ quizzes }) => {
         </div>
 
         {/* Submit Button */}
-        <div className="w-full flex justify-center py-3 pb-6">
+        <div className="w-full flex justify-center py-4 pb-6">
           <SubmitButton
             onClick={handleSubmit}
             disabled={!isSubmitted && selectedAnswers.length === 0}
@@ -172,7 +187,7 @@ export const QuizContainer = ({ quizzes }) => {
         </div>
       </div>
 
-      <div className="bg-black bg-opacity-30 text-white text-center py-2 font-bold text-xs">
+      <div className="bg-black bg-opacity-30 text-white text-center py-2 font-bold text-xs flex-shrink-0">
         Score: {score}/{totalQuestions}
       </div>
     </div>
