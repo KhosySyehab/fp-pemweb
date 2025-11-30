@@ -11,7 +11,7 @@ export const SubmitButton = ({ onClick, disabled, isSubmitted }) => {
           : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 active:scale-95 shadow-2xl hover:scale-105'
       }`}
     >
-      {isSubmitted ? '➜ Soal Berikutnya' : '✓ Submit'}
+      {isSubmitted ? '➜ Next Question' : '✓ Submit'}
     </button>
   );
 };

@@ -34,13 +34,10 @@ export const QuizContainer = ({ quizzes }) => {
       // Allow all alphabet keys
       if (!isSubmitted && /^[A-Z]$/.test(key)) {
         if (selectedAnswers.length < currentQuiz.displayLength) {
-          const usedLetters = getUsedLetters();
-          if (!usedLetters.includes(key)) {
-            setSelectedAnswers([
-              ...selectedAnswers,
-              { letter: key, position: selectedAnswers.length }
-            ]);
-          }
+          setSelectedAnswers([
+            ...selectedAnswers,
+            { letter: key, position: selectedAnswers.length }
+          ]);
         }
       }
     };
@@ -55,24 +52,18 @@ export const QuizContainer = ({ quizzes }) => {
 
   const handleSelectOption = (letter) => {
     if (!isSubmitted && selectedAnswers.length < currentQuiz.displayLength) {
-      const usedLetters = getUsedLetters();
-      if (!usedLetters.includes(letter)) {
-        setSelectedAnswers([
-          ...selectedAnswers,
-          { letter, position: selectedAnswers.length }
-        ]);
-      }
+      setSelectedAnswers([
+        ...selectedAnswers,
+        { letter, position: selectedAnswers.length }
+      ]);
     }
   };
 
   const handleDropLetter = (index, letter) => {
     if (!isSubmitted) {
-      const usedLetters = getUsedLetters();
-      if (!usedLetters.includes(letter)) {
-        const newAnswers = [...selectedAnswers];
-        newAnswers[index] = { letter, position: index };
-        setSelectedAnswers(newAnswers);
-      }
+      const newAnswers = [...selectedAnswers];
+      newAnswers[index] = { letter, position: index };
+      setSelectedAnswers(newAnswers);
     }
   };
 
@@ -101,7 +92,7 @@ export const QuizContainer = ({ quizzes }) => {
         setSelectedAnswers([]);
         setIsSubmitted(false);
       } else {
-        alert(`Quiz Selesai! Score: ${score}/${totalQuestions}`);
+        alert(`Quiz Complete! Score: ${score}/${totalQuestions}`);
         setCurrentQuestionIndex(0);
         setScore(0);
         setSelectedAnswers([]);
@@ -152,18 +143,18 @@ export const QuizContainer = ({ quizzes }) => {
         {isSubmitted && (
           <div className="py-2 text-center">
             {selectedAnswers.map(item => item.letter).join('') === currentQuiz.answer ? (
-              <p className="text-2xl font-bold text-green-300 drop-shadow-lg">Benar! 🎉</p>
+              <p className="text-2xl font-bold text-green-300 drop-shadow-lg">Correct! 🎉</p>
             ) : (
               <div>
-                <p className="text-2xl font-bold text-red-300 drop-shadow-lg">Salah!</p>
-                <p className="text-white text-sm font-semibold">Jawaban: {currentQuiz.answer}</p>
+                <p className="text-2xl font-bold text-red-300 drop-shadow-lg">Wrong!</p>
+                <p className="text-white text-sm font-semibold">Answer: {currentQuiz.answer}</p>
               </div>
             )}
           </div>
         )}
 
         {/* Keyboard Layout - Full QWERTY */}
-        <div className="w-full flex justify-center py-2 flex-1">
+        <div className="w-full flex justify-center py-3">
           <KeyboardLayout
             onSelectOption={handleSelectOption}
             usedLetters={getUsedLetters()}
@@ -172,7 +163,7 @@ export const QuizContainer = ({ quizzes }) => {
         </div>
 
         {/* Submit Button */}
-        <div className="w-full flex justify-center py-2">
+        <div className="w-full flex justify-center py-3 pb-6">
           <SubmitButton
             onClick={handleSubmit}
             disabled={!isSubmitted && selectedAnswers.length === 0}
