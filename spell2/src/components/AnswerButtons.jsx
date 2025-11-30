@@ -3,7 +3,7 @@ import { AnswerButton } from './AnswerButton';
 
 export const AnswerButtons = ({ options, onSelectOption, selectedAnswers, isSubmitted, correctAnswer }) => {
   return (
-    <div className="flex justify-center gap-4 py-8 flex-wrap">
+    <div className="flex justify-center gap-3 flex-wrap max-w-md">
       {options.map((option, index) => (
         <AnswerButton
           key={index}

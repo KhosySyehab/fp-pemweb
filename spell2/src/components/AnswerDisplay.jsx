@@ -1,19 +1,33 @@
 import React from 'react';
 
-export const AnswerDisplay = ({ answer, displayLength }) => {
-  // Buat array dash sesuai displayLength
-  const dashes = Array(displayLength).fill('_');
+export const AnswerDisplay = ({ answer, displayLength, onRemoveLetter, onDropLetter }) => {
+  const dashes = Array(displayLength).fill(null);
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    const letter = e.dataTransfer.getData('text/plain');
+    if (letter) {
+      onDropLetter(index, letter);
+    }
+  };
 
   return (
-    <div className="flex justify-center gap-4 py-8">
+    <div className="flex justify-center gap-4">
       {dashes.map((_, index) => (
         <div
           key={index}
-          className="w-12 h-12 bg-white rounded-lg border-4 border-gray-400 flex items-center justify-center shadow-md"
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, index)}
+          className="w-20 h-20 bg-white rounded-lg border-4 border-blue-600 flex items-center justify-center shadow-lg font-bold text-4xl text-blue-600 cursor-pointer hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
+          onClick={() => answer[index] && onRemoveLetter(index)}
+          title={answer[index] ? 'Klik untuk hapus' : 'Drag huruf ke sini'}
         >
-          <span className="text-2xl font-bold text-gray-700">
-            {answer[index] ? answer[index] : '_'}
-          </span>
+          {answer[index] ? answer[index] : '_'}
         </div>
       ))}
     </div>
