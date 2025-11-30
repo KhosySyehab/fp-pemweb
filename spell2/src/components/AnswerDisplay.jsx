@@ -17,13 +17,13 @@ export const AnswerDisplay = ({ answer, displayLength, onRemoveLetter, onDropLet
   };
 
   return (
-    <div className="flex justify-center gap-4">
+    <div className="flex justify-center gap-2">
       {dashes.map((_, index) => (
         <div
           key={index}
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, index)}
-          className="w-20 h-20 bg-white rounded-lg border-4 border-blue-600 flex items-center justify-center shadow-lg font-bold text-4xl text-blue-600 cursor-pointer hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
+          className="w-14 h-14 bg-white rounded-lg border-4 border-blue-500 flex items-center justify-center shadow-lg font-bold text-3xl text-blue-600 cursor-pointer hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
           onClick={() => answer[index] && onRemoveLetter(index)}
           title={answer[index] ? 'Klik untuk hapus' : 'Drag huruf ke sini'}
         >

@@ -3,7 +3,7 @@ import { QuizHeader } from './QuizHeader';
 import { AudioButton } from './AudioButton';
 import { QuestionImage } from './QuestionImage';
 import { AnswerDisplay } from './AnswerDisplay';
-import { OptionButtons } from './OptionButtons';
+import { KeyboardLayout } from './KeyboardLayout';
 import { SubmitButton } from './SubmitButton';
 
 export const QuizContainer = ({ quizzes }) => {
@@ -31,9 +31,10 @@ export const QuizContainer = ({ quizzes }) => {
         return;
       }
 
-      if (!isSubmitted && currentQuiz.options.includes(key)) {
+      // Allow all alphabet keys
+      if (!isSubmitted && /^[A-Z]$/.test(key)) {
         if (selectedAnswers.length < currentQuiz.displayLength) {
-          const usedLetters = selectedAnswers.map(item => item.letter);
+          const usedLetters = getUsedLetters();
           if (!usedLetters.includes(key)) {
             setSelectedAnswers([
               ...selectedAnswers,
@@ -101,6 +102,10 @@ export const QuizContainer = ({ quizzes }) => {
         setIsSubmitted(false);
       } else {
         alert(`Quiz Selesai! Score: ${score}/${totalQuestions}`);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setSelectedAnswers([]);
+        setIsSubmitted(false);
       }
     } else {
       const answer = selectedAnswers.map(item => item.letter).join('');
@@ -122,19 +127,19 @@ export const QuizContainer = ({ quizzes }) => {
     <div className="min-h-screen bg-gradient-to-b from-blue-500 to-blue-300 flex flex-col">
       <QuizHeader currentQuestion={currentQuestionIndex + 1} totalQuestions={totalQuestions} />
 
-      <div className="flex-1 flex flex-col items-center justify-between p-6 overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center p-3 overflow-y-auto">
         {/* Audio Button */}
-        <div className="pt-4">
+        <div className="pt-1">
           <AudioButton onPlay={handlePlayAudio} isPlaying={isPlaying} />
         </div>
 
         {/* Question Image */}
-        <div className="w-full flex justify-center py-4">
+        <div className="w-full flex justify-center py-2">
           <QuestionImage src={currentQuiz.image} alt="Question" />
         </div>
 
         {/* Answer Display */}
-        <div className="w-full flex justify-center py-6">
+        <div className="w-full flex justify-center py-3">
           <AnswerDisplay
             answer={answerArray}
             displayLength={currentQuiz.displayLength}
@@ -143,32 +148,31 @@ export const QuizContainer = ({ quizzes }) => {
           />
         </div>
 
-        {/* Option Buttons */}
-        <div className="w-full flex justify-center py-4">
-          <OptionButtons
-            options={currentQuiz.options}
+        {/* Feedback */}
+        {isSubmitted && (
+          <div className="py-2 text-center">
+            {selectedAnswers.map(item => item.letter).join('') === currentQuiz.answer ? (
+              <p className="text-2xl font-bold text-green-300 drop-shadow-lg">Benar! 🎉</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold text-red-300 drop-shadow-lg">Salah!</p>
+                <p className="text-white text-sm font-semibold">Jawaban: {currentQuiz.answer}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Keyboard Layout - Full QWERTY */}
+        <div className="w-full flex justify-center py-2 flex-1">
+          <KeyboardLayout
             onSelectOption={handleSelectOption}
             usedLetters={getUsedLetters()}
             isSubmitted={isSubmitted}
           />
         </div>
 
-        {/* Feedback */}
-        {isSubmitted && (
-          <div className="py-4 text-center">
-            {selectedAnswers.map(item => item.letter).join('') === currentQuiz.answer ? (
-              <p className="text-3xl font-bold text-green-400 drop-shadow-lg animate-bounce">Benar! 🎉</p>
-            ) : (
-              <div>
-                <p className="text-3xl font-bold text-red-400 drop-shadow-lg">Salah!</p>
-                <p className="text-white mt-2 text-lg font-semibold">Jawaban: {currentQuiz.answer}</p>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Submit Button */}
-        <div className="w-full flex justify-center py-6">
+        <div className="w-full flex justify-center py-2">
           <SubmitButton
             onClick={handleSubmit}
             disabled={!isSubmitted && selectedAnswers.length === 0}
@@ -177,7 +181,7 @@ export const QuizContainer = ({ quizzes }) => {
         </div>
       </div>
 
-      <div className="bg-black bg-opacity-30 text-white text-center py-4 font-bold text-lg">
+      <div className="bg-black bg-opacity-30 text-white text-center py-2 font-bold text-xs">
         Score: {score}/{totalQuestions}
       </div>
     </div>
