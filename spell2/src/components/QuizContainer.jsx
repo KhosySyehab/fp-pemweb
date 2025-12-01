@@ -98,8 +98,9 @@ export const QuizContainer = ({ quizzes }) => {
   const handleSubmit = () => {
     const answer = selectedAnswers.map(item => item.letter).join('');
     if (answer.length === currentQuiz.displayLength) {
+      setIsSubmitted(true);
       if (answer === currentQuiz.answer) {
-        // Correct answer - auto advance
+        // Correct answer - show green boxes, then auto advance
         setScore(score + 1);
         setTimeout(() => {
           if (currentQuestionIndex < totalQuestions - 1) {
@@ -119,8 +120,7 @@ export const QuizContainer = ({ quizzes }) => {
         setTimeout(() => {
           setSelectedAnswers([]);
           setIsSubmitted(false);
-        }, 2000); // Show "Wrong!" for 2 seconds then reset
-        setIsSubmitted(true);
+        }, 2000);
       }
     }
   };
@@ -161,7 +161,7 @@ export const QuizContainer = ({ quizzes }) => {
         {isSubmitted && (
           <div className="py-2 text-center">
             {selectedAnswers.map(item => item.letter).join('') === currentQuiz.answer ? (
-              <p className="text-2xl font-bold text-green-300 drop-shadow-lg">Correct! 🎉</p>
+              <p className="text-2xl font-bold text-green-300 drop-shadow-lg">Correct!</p>
             ) : (
               <p className="text-2xl font-bold text-red-300 drop-shadow-lg">Wrong! Try again.</p>
             )}
