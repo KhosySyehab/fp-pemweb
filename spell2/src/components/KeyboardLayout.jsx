@@ -1,7 +1,6 @@
 import React from 'react';
 
-export const KeyboardLayout = ({ onSelectOption, usedLetters, isSubmitted }) => {
-  // QWERTY Layout
+export const KeyboardLayout = ({ onSelectOption, usedLetters, isSubmitted, onReturnLetter }) => { // ✨ Tambah prop onReturnLetter
   const rows = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
@@ -15,8 +14,26 @@ export const KeyboardLayout = ({ onSelectOption, usedLetters, isSubmitted }) => 
     e.dataTransfer.setData('text/plain', letter);
   };
 
+  // ✨ TAMBAHKAN INI - Drop zone untuk keyboard area
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const removeIndex = e.dataTransfer.getData('removeIndex');
+    if (removeIndex !== '') {
+      onReturnLetter(parseInt(removeIndex)); // Hapus dari answer
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-2 bg-gray-100 p-3 rounded-xl shadow-lg">
+    <div 
+      className="flex flex-col gap-2 bg-gray-100 p-3 rounded-xl shadow-lg"
+      onDragOver={handleDragOver} // ✨ TAMBAHKAN
+      onDrop={handleDrop} // ✨ TAMBAHKAN
+    >
       {rows.map((row, rowIndex) => (
         <div
           key={rowIndex}

@@ -90,6 +90,12 @@ export const QuizContainer = ({ quizzes }) => {
     }
   };
 
+  const handleReturnLetter = (index) => {
+  if (!isSubmitted) {
+    handleRemoveLetter(index); // Reuse existing function
+  }
+};
+
   const handlePlayAudio = () => {
     setIsPlaying(true);
     setTimeout(() => setIsPlaying(false), 2000);
@@ -174,6 +180,7 @@ export const QuizContainer = ({ quizzes }) => {
             onSelectOption={handleSelectOption}
             usedLetters={getUsedLetters()}
             isSubmitted={isSubmitted}
+            onReturnLetter={handleReturnLetter}
           />
         </div>
 
